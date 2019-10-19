@@ -1,0 +1,40 @@
+.recipe li {
+    float: left;
+    width: 40%;
+    font-size: 1.3em;
+    line-height: 31px;
+  }
+
+  #logo img {
+    float: left;
+  }
+
+  #logo h1 {
+    padding-left: 50px;
+    font-family: 'Yellowtail', cursive;
+    font-size: 2.4em;
+  }
+
+  .print img {
+    margin-right: 3px;
+  }
+
+  #logo img {
+    float: left;
+  }
+  
+  #logo h1 {
+    padding-left: 50px;
+    font-family: 'Yellowtail', cursive;
+    font-size: 2.4em;
+  }
+
+  #logo img {
+    float: left;
+  }
+  
+  #logo h1 {
+    padding-left: 50px;
+    font-family: 'Yellowtail', cursive;
+    font-size: 2.4em;
+  }
