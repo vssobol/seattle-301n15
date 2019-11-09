@@ -33,10 +33,10 @@ app.get('/add', (request, response) => {
     .catch( error => errorHandler(error) );
 });
 
-// Get everything in the database
+// Get everything in the database 
 // Stretch goal ... do it with a where
 app.get('/people', (request, response) => {
-  let SQL = 'SELECT * FROM people';
+  let SQL = 'SELECT * FROM people where first_name = city';
   client.query(SQL)
     .then( results => {
       response.status(200).json(results.rows);
