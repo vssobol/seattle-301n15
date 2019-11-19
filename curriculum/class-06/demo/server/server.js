@@ -6,48 +6,64 @@ require('dotenv').config();
 //declare Application Dependancies
 const express = require('express');
 const cors = require('cors');
+const superagent = require('superagent');
 
 //Application Setup
 const PORT = process.env.PORT;
 const app  = express();
 app.use(cors());
 
-//route syntax = app.<operation>('<route>', callback );
-app.get('/', (request, response) => {
-    response.send('Home Page!');
-})
-
-app.get('/bad', (request, response) => {
-    throw new Error('bummer');
-})
-
-//the callback can be a separate function. Really makes readable.
-app.get('/about', aboutUsHandler);
-
-function aboutUsHandler(request, response) {
-    response.status(200).send('This is the About Us page .html');
-}
-
-// app.get('*', (request, response) => {
-//     response.status(404).send('This route does not exist')
-// })
+let locations = {};
 
 //API routes
-app.get('/location', (request, response) => {
-    try{
-        const geoData = require('./data/geo.json');
-        const city = request.query.data;
-        const locationData = new Location(city, geoData);
-        console.log('locationData ',locationData);
-        response.send(locationData);
-    }
-    catch(error){
-        //some function or error message
-        errorHandler('So sorry, something went wrong', request, response);
-    }
-})
+app.get('/location', getLatLong);
+app.get('/weather', getWeather);
+app.use('*', notFoundHandler);
+
 
 //Helper Funcitons
+
+function getLatLong(request, response){
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${request.query.data}&key=${process.env.GEOCODE_API_KEY}`;
+    if ( locations[url] ) {
+        response.send(locations[url]);
+    }
+    else{
+    superagent.get(url)
+        .then( data => {
+        const geoData = data.body;
+        const location = new Location(request.query.data,geoData);
+        locations[url] = location;
+        response.send(location);
+        })
+        .catch( error => { errorHandler(error, request, response)});
+    }
+}
+
+function getWeather(request, response){
+    const url = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${request.query.data.latitude},${request.query.data.longitude}`;
+ 
+  superagent.get(url)
+    .then( data => {
+      const weatherSummaries = data.body.daily.data.map(day => {
+        return new Weather(day);
+      });
+      response.status(200).json(weatherSummaries);
+    })
+    .catch( () => {
+      errorHandler('So sorry, something went wrong.', request, response);
+    });
+}
+
+function notFoundHandler(request, response) {
+    response.status(404).send('This route does not exist');
+}
+
+function errorHandler(error, request, response) {
+    response.status(500).send(error);
+}
+
+//Constructors
 function Location(city, geoData){
     this.search_query = city;
     this.formatted_query = geoData.results[0].formatted_address;
@@ -55,11 +71,10 @@ function Location(city, geoData){
     this.longitude = geoData.results[0].geometry.location.lng;
 }
 
-function errorHandler(error, request, response) {
-    response.status(500).send(error);
+function Weather(day) {
+    this.forecast = day.summary;
+    this.time = new Date(day.time * 1000).toString().slice(0,15);
 }
-
-
 
 //Ensure the server is listening for requests
 // THIS MUST BE AT THE BOTTOM OF THE FILE!!!!
