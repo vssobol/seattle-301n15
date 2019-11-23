@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+        <%- include('../layout/head');%>
+<body>
+        <%- include('../layout/header');%>
+        <p><a href="/">Home</a></p>
+
+        <form action="/add" method="post">
+                <label>Task Name</label>
+                <input type="text" name="task" placeholder="task">
+                <textarea name="description" placeholder="Describe the task" cols="30" rows="10"></textarea>
+                <label>True
+                    <input type="radio" name="status" value="true">
+                </label>
+                <label>False
+                    <input type="radio" name="status" value="false">
+                </label>
+                <input type="text" name="category" placeholder="category">   
+                <button>Add this Task</button> 
+            </form>
+            <%- include('../layout/footer');%>
+</body>
+</html>
