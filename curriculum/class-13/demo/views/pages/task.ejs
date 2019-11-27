@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-
+        <%- include('../layout/head');%>
 <body>
+        <%- include('../layout/header');%>
         <p><a href="/">Home</a></p>
     <h1>This is the Details Page</h1>
         <ul>
@@ -10,7 +11,21 @@
                 <li>Description: <%= task.description%></li>
                 <li>Status: <%= task.status === true ? 'Complete' : 'Incomplete' %></li>
                 <li>Category: <%= task.category%></li>
+                <form action="/task/<%=task.id%>" method="post">
+                    <input type="hidden" name="_method" value="delete">
+                    <input type="hidden" name="id" value="<%= task.id %>">
+                    <button type="submit">Delete Task</button>
+                </form>
+                <button class="edit-button">Edit Details</button>
+                <section class="hide-me">
+                    <%- include('../layout/form', {formAction: 'update', task: task}) %>
+                </section>
             <% }) %>
         </ul>
+
+        <%- include('../layout/footer');%>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="/app.js"></script>
 </body>
 </html>

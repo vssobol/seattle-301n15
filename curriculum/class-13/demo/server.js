@@ -3,6 +3,9 @@
 const express = require('express');
 const pg = require('pg');
 require('dotenv').config();
+
+const methodOverride = require('method-override');
+
 const client = new pg.Client(process.env.DATABASE_URL);
 
 const app = express();
@@ -16,6 +19,14 @@ app.use(express.static('public'));
 
 client.connect();
 client.on('error', err => console.error(err));
+
+app.use(methodOverride( (request, response) => {
+    if(request.body && typeof request.body === 'object' && '_method' in request.body) {
+        let method = request.body._method;
+        delete request.body._method;
+        return method;
+    }
+}))
 
 // Set the view engine for server-side templating
 app.set('view engine', 'ejs');
@@ -32,7 +43,9 @@ app.post('/add', addNewTask);
 
 //this will take the id from the URL and use it to bring up details of only ONE task
 app.get('/task/:task_id', getOneTask);
+app.delete('/task/:task_id', deleteTask);
 
+app.put('/update/:task_id', updateTask);
 
 //HELPER FUNCTIONS
 function getTodos(req, res) {
@@ -65,12 +78,26 @@ function getOneTask(req, res) {
     return client.query(sql, [req.params.task_id])
     .then(result => {
         if(result.rowCount >0 ){
-            console.log('result',result.rows);
             res.render('pages/task', {taskDetail: result.rows});
         }
     })
 }
 
+function deleteTask(req, res) {
+    let sql = 'DELETE FROM tasks WHERE id=$1;';
+    let values = [parseInt(req.body.id)];
+    return client.query(sql, values)
+    .then( res.redirect('/'))
+}
+
+function updateTask(req, res) {
+    let sql = 'UPDATE tasks SET task=$1, description=$2, status=$3, category=$4 WHERE id=$5;';
+    let { title, description, status, category } = req.body;
+    let values = [title, description, status, category, req.params.task_id];
+
+    client.query(sql, values) 
+    .then(res.redirect(`/task/${req.params.task_id}`));
+}
 
 
 
