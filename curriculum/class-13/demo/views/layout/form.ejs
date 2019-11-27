@@ -1,0 +1,18 @@
+<form action="<%- 'update' === formAction ? '/update/'+task.id : '/add' %>" method="post">
+    <h2><%- 'update' ===formAction ? "Update Task" : "Add a new Task" %></h2>
+    <input type="hidden" name="_method" value="<%- 'update' === formAction ? 'put' : 'post' %>">
+    <input type="hidden" name="id" value="<%=task.id%>">
+    <label>Task Name</label>
+    <input type="text" value="<%=task.task%>" name="task" placeholder="task">
+    <textarea name="description" placeholder="Describe the task" cols="30" rows="10"><%=task.description%></textarea>
+    <formfield>Status
+        <label>Complete
+            <input type="radio" name="status" value="true">
+        </label>
+        <label>Incomplete
+            <input type="radio" name="status" value="false">            
+        </label>
+    </formfield>
+    <input type="text" value="<%=task.category%>" name="category" placeholder="category">   
+    <button>Submit</button> 
+</form>
