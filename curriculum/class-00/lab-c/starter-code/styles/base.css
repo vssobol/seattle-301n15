@@ -1,0 +1,15 @@
+body {
+    background: #fff;
+  }
+
+  main p {
+    color: #333;
+    font-size: 1.2em;
+    line-height: 1.3em;
+    text-indent: 30px;
+    margin: 20px 0px;
+  }
+
+  * {
+    font-family: times;
+  }
